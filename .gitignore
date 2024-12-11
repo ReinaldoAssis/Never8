@@ -1,0 +1,4 @@
+venv
+testbenches/*
+!testbenches/*.v
+__pycache__
