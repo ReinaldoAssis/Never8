@@ -50,7 +50,7 @@ def _find_file(file):
                 file_name = os.path.splitext(file)[0]
                 # print(f"file {file_name} looking for {module_name}")
                 similarity = SequenceMatcher(None, module_name, file_name).ratio()
-                if similarity >= 0.9:
+                if similarity >= 0.95:
                     if file not in TEST_IGNORE_FILES:
                         return os.path.join(root, file)
                     
@@ -177,8 +177,8 @@ class VerilogTestbench:
             for file in files:
                 file_name = os.path.splitext(file)[0]
                 similarity = SequenceMatcher(None, module_name, file_name).ratio()
-                # print(f"[{root}] file {file_name} looking for {module_name} {similarity}")
-                if similarity >= 0.9 and file not in TEST_IGNORE_FILES: # and root not in TEST_IGNORE:
+                # print(f"[{root}] file [{file_name}] looking for [{module_name}] {similarity}")
+                if similarity >= 0.95 and file not in TEST_IGNORE_FILES: # and root not in TEST_IGNORE:
                     return os.path.join(root, file)
         return None
 
