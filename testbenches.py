@@ -25,6 +25,9 @@ def basic_tests(tb_dir):
     
     def outpath(name):
         return os.path.join(tb_dir, name)
+    
+    def bits(b):
+        return f"{len(b)}'b{b}"
                            
     tb_half_adder = create_testbench(path("half_adder.v"))
     tb_half_adder.set_golden_model(half_adder_model)
@@ -137,11 +140,39 @@ def basic_tests(tb_dir):
     alu8bit.test_name("SUB MENOS 1")
     alu8bit.set_inputs(opcode="3'b001", a="5'b00110", b="8'b00000101")
     alu8bit.wait(100)
-    alu8bit.assert_outputs(zflag="1'b0", c="1'b0",data_out="8'b11111111")
-
-
+    alu8bit.assert_outputs(zflag="1'b0", c="1'b0", data_out=bits("11111111"))
 
     alu8bit.output_verilog(outpath("alu8bit_tb.v"))
+
+
+    # REGBANK ********************************************
+    regbank = create_testbench(path("regbank.v"))
+    regbank.auto_wait = False
+
+    regbank.test_name("ZERO REGISTER")
+    regbank.set_inputs(sel=bits("00000"), data_in=bits('00000101'), clk=bits('0'), write_reg=bits('1'))
+    regbank.wait(10)
+    regbank.drive_signal('clk',bits("1"))
+    regbank.wait(10)
+    regbank.drive_signal('clk',bits("0"))
+    regbank.wait(10)
+    regbank.drive_signal('clk',bits("1"))
+    regbank.wait(10)
+    regbank.assert_outputs(data_out=bits("00000000"))
+
+
+    regbank.test_name("WRITE REGISTER")
+    regbank.set_inputs(sel=bits("00001"), data_in=bits('00000101'), clk=bits('0'), write_reg=bits('1'))
+    regbank.wait(10)
+    regbank.drive_signal('clk',bits("1"))
+    regbank.wait(10)
+    regbank.drive_signal('clk',bits("0"))
+    regbank.wait(10)
+    regbank.drive_signal('clk',bits("1"))
+    regbank.wait(10)
+    regbank.assert_outputs(data_out=bits("00000101"))
+
+    regbank.output_verilog(outpath("regbank_tb.v"))
 
 
 
