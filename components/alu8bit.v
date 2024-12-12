@@ -32,13 +32,13 @@ module alu8bit (
 
 
     always @(*) begin
-        case(opcode)
-            3'b000: begin  // Addition
+        case(opcode[0])
+            1'b0: begin  // Addition
                 data_out = sum1;
                 c = sum_cout;
                 zflag = (data_out == 8'b0);
             end
-            3'b001: begin  // subtraction
+            1'b1: begin  // subtraction
                 data_out = sub1;
                 c = sub_cout;
                 zflag = (data_out == 8'b0);
