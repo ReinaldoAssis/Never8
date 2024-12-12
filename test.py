@@ -4,6 +4,7 @@ import subprocess
 import re
 from colorama import init, Fore, Style
 import argparse
+from verilog_resolver import resolve_verilog_dependencies
 
 # Initialize colorama for cross-platform colored output
 init()
@@ -82,9 +83,17 @@ def run_testbench(testbench):
     # Find all Verilog files in the parent directory
     # verilog_files = [os.path.join(parent_dir, f) for f in os.listdir(parent_dir) if f.endswith('.v') and f != uut_file]
     verilog_files = find_non_testbenches_verilog_files(ignore=[uut_file])
+
+    # TODO: read the uut_file and search for the modules, remove all other files from verilog_files
+    # and only include the necessary ones (instanciated in the uut_file)
+    # filtered_verilog_files = resolve_verilog_dependencies(uut_path, parent_dir)
     
     # Compile command with all Verilog files
+    # compile_command = f"iverilog -o {testbench[:-2]} {' '.join(verilog_files)} {uut_path} {testbench}"
+    # vcd_file = testbench[:-5] + ".vcd"
+   
     compile_command = f"iverilog -o {testbench[:-2]} {' '.join(verilog_files)} {uut_path} {testbench}"
+
     compile_result = subprocess.run(compile_command, shell=True, capture_output=True, text=True)
     
     if compile_result.returncode != 0:
@@ -233,6 +242,11 @@ class VerilogTestbench:
     def output_verilog(self, output_file):
         with open(output_file, 'w') as f:
             f.write(f"`timescale 1ns / 1ps\n\n")
+            # f.write(f"`ifndef {self.module_name}\n")
+            # f.write(f"`define {self.module_name}\n")
+            # f.write(f"`endif\n\n")
+            
+
             f.write(f"module {self.module_name}_tb;\n\n")
 
             # Declare reg and wire
@@ -292,6 +306,11 @@ class VerilogTestbench:
                     f.write(");\n")
                     f.write("        end\n")
                 f.write("\n")
+            
+            
+        
+            # f.write(f"        $dumpfile(\"{self.module_name}.vcd\");\n")
+            # f.write(f"        $dumpvars(0, {self.module_name}_tb);\n")
             f.write("        $finish;\n")
             f.write("    end\n\n")
             f.write("endmodule\n")
@@ -324,6 +343,70 @@ def find_non_testbenches_verilog_files(start_dir='.', ignore=[]):
                     verilog_files.add(file_path)  
     
     return verilog_files
+
+# def extract_module_instances(uut_file):
+#     """
+#     Extract module instance names from a Verilog UUT file.
+    
+#     Args:
+#         uut_file (str): Path to the UUT Verilog file
+    
+#     Returns:
+#         set: Set of unique module instance names used in the file
+#     """
+#     # Read the contents of the UUT file
+#     with open(uut_file, 'r') as f:
+#         uut_content = f.read()
+    
+#     # Regex pattern to find module instances
+#     # This pattern looks for:
+#     # 1. Module name followed by optional instance name
+#     # 2. Handles both styles: 
+#     #    module_name instance_name (...);
+#     #    module_name (...);
+#     instance_pattern = r'\b(\w+)\s+(?:\w+\s*)?(\()'
+    
+#     # Find all matches
+#     matches = re.findall(instance_pattern, uut_content)
+    
+#     # Extract just the module names, removing duplicates
+#     module_instances = set(match[0] for match in matches 
+#                            # Exclude built-in Verilog keywords or common primitives
+#                            if match[0] not in ['always', 'assign', 'initial', 'wire', 'reg'])
+    
+#     return module_instances
+
+# def filter_verilog_files(uut_file, verilog_files):
+#     """
+#     Filter Verilog files to include only those with module instances 
+#     used in the UUT file.
+    
+#     Args:
+#         uut_file (str): Path to the UUT Verilog file
+#         verilog_files (list): List of Verilog files to filter
+    
+#     Returns:
+#         list: Filtered list of Verilog files
+#     """
+#     # Extract module instances from UUT file
+#     required_modules = extract_module_instances(uut_file)
+    
+#     # Filter files based on module names
+#     filtered_files = []
+#     for file_path in verilog_files:
+#         # Read file content
+#         with open(file_path, 'r') as f:
+#             file_content = f.read()
+        
+#         # Check if any of the required modules are defined in this file
+#         for module in required_modules:
+#             # Look for module definition
+#             module_def_pattern = rf'module\s+{module}\s*\('
+#             if re.search(module_def_pattern, file_content):
+#                 filtered_files.append(file_path)
+#                 break  # No need to check further once a match is found
+    
+#     return filtered_files
 
 def main():
     parser = argparse.ArgumentParser(description="Verilog Testbench Generator and Runner")

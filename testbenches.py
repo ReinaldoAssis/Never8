@@ -100,12 +100,12 @@ def basic_tests(tb_dir):
 
     tb_reg8bit.test_name("DISABLED BUT CLOCKED")
 
-    tb_reg8bit.set_inputs(datain="8'b00000000", enable="1'b1")
+    tb_reg8bit.set_inputs(datain="8'b00000000", enable="1'b1", clk="1'b0")
+    tb_reg8bit.wait(100)
     tb_reg8bit.drive_signal("clk", "1'b1")
     tb_reg8bit.wait(100 )
+
     tb_reg8bit.drive_signal("clk", "1'b0")
-    tb_reg8bit.wait(100 )
-    tb_reg8bit.drive_signal("clk", "1'b1")
 
     tb_reg8bit.set_inputs(datain="8'b00000000", enable="1'b0", clk="1'b0")
     tb_reg8bit.wait(100 )
@@ -115,3 +115,16 @@ def basic_tests(tb_dir):
     tb_reg8bit.assert_outputs(dataout="8'b00000000")
 
     tb_reg8bit.output_verilog(outpath("reg8bit_tb.v"))
+
+    alu8bit = create_testbench(path("alu8bit.v"))
+    alu8bit.auto_wait = False
+
+    alu8bit.test_name("SOMA")
+    alu8bit.set_inputs(opcode="3'b000",a="5'b00001",b="8'b00000001")
+    alu8bit.wait(100)
+    alu8bit.assert_outputs(data_out="8'b00000010",zflag="1'b0",c="1'b0")
+
+    alu8bit.output_verilog(outpath("alu8bit_tb.v"))
+
+
+

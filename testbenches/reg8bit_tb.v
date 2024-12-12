@@ -46,7 +46,9 @@ module reg8bit_tb;
         end
 
         // Test vector 11
-        datain = 8'b00000000; enable = 1'b1;
+        datain = 8'b00000000; enable = 1'b1; clk = 1'b0;
+
+        #100;
 
         clk = 1'b1;
 
@@ -54,11 +56,7 @@ module reg8bit_tb;
 
         clk = 1'b0;
 
-        #100;
-
-        clk = 1'b1;
-
-        // Test vector 17
+        // Test vector 16
         datain = 8'b00000000; enable = 1'b0; clk = 1'b0;
 
         #100;
