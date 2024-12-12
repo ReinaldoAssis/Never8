@@ -9,6 +9,11 @@ module alu8bit (
     wire [7:0] sum1;
     wire sum_cout;
 
+    wire [7:0] sub1;
+    wire [7:0] sub_cout;
+
+    wire [7:0] not_a = {3'b111,~a};
+
     eight_bit_adder adder1(
         .a({3'b000, a}),
         .b(b),
@@ -17,11 +22,25 @@ module alu8bit (
         .cout(sum_cout)
     );
 
+    eight_bit_adder subtract(
+        .a(not_a),
+        .b(b),
+        .cin(1'b1),
+        .s(sub1),
+        .cout(sub_cout)
+    );
+
+
     always @(*) begin
         case(opcode)
             3'b000: begin  // Addition
                 data_out = sum1;
                 c = sum_cout;
+                zflag = (data_out == 8'b0);
+            end
+            3'b001: begin  // subtraction
+                data_out = sub1;
+                c = sub_cout;
                 zflag = (data_out == 8'b0);
             end
             default: begin

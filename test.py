@@ -285,6 +285,8 @@ class VerilogTestbench:
                     f.write(f"        if ({' || '.join(conditions)}) begin\n")
                     f.write(f'            $display("Test failed: {test_name} failed for ')
                     f.write(", ".join([f"{name}=%b" for name in self.inputs.keys()]))
+                    # TODO: I found that if you do not pass the key pairs in order in the assert_outputs function
+                    # it will display the wrong values, i don't have time to fix this now
                     f.write(f'. Expected ')
                     f.write(", ".join([f"{name}=%b" for name in self.outputs.keys()]))
                     f.write(f', got ')

@@ -120,9 +120,26 @@ def basic_tests(tb_dir):
     alu8bit.auto_wait = False
 
     alu8bit.test_name("SOMA")
-    alu8bit.set_inputs(opcode="3'b000",a="5'b00001",b="8'b00000001")
+    alu8bit.set_inputs(opcode="3'b000", a="5'b00001", b="8'b00000001")
     alu8bit.wait(100)
-    alu8bit.assert_outputs(data_out="8'b00000010",zflag="1'b0",c="1'b0")
+    alu8bit.assert_outputs(data_out="8'b00000010", zflag="1'b0", c="1'b0")
+
+    alu8bit.test_name("ZERO_RESULT")
+    alu8bit.set_inputs(opcode="3'b000", a="5'b00000", b="8'b00000000")
+    alu8bit.wait(100)
+    alu8bit.assert_outputs(data_out="8'b00000000", zflag="1'b1", c="1'b0")
+
+    alu8bit.test_name("SUB_ZERO")
+    alu8bit.set_inputs(opcode="3'b001", a="5'b00101", b="8'b00000101")
+    alu8bit.wait(100)
+    alu8bit.assert_outputs(data_out="8'b00000000", zflag="1'b1", c="1'b1")
+
+    alu8bit.test_name("SUB MENOS 1")
+    alu8bit.set_inputs(opcode="3'b001", a="5'b00110", b="8'b00000101")
+    alu8bit.wait(100)
+    alu8bit.assert_outputs(zflag="1'b0", c="1'b0",data_out="8'b11111111")
+
+
 
     alu8bit.output_verilog(outpath("alu8bit_tb.v"))
 
