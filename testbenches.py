@@ -174,5 +174,34 @@ def basic_tests(tb_dir):
 
     regbank.output_verilog(outpath("regbank_tb.v"))
 
+    # PROGRAM MEMORY ********************************************
+    mem = create_testbench(path("program_mem.v"))
+    mem.auto_wait = False
+
+    mem.set_inputs(address=bits("00000000"), clk=bits("0"))
+    mem.wait(10)
+    mem.drive_signal("clk", bits("1"))
+    mem.wait(10)
+    mem.assert_outputs(data_out=bits("00000001"))
+
+    mem.output_verilog(outpath("program_mem_tb.v"))
+
+    # MAVERIK ********************************************
+    mav = create_testbench(path("maverik.v"))
+    mav.auto_wait = False
+
+    mav.test_name("ADD")
+    mav.set_inputs(clk=bits("0"))
+    mav.wait(100)
+    mav.drive_signal("clk", bits("1"))
+    mav.wait(100)
+    mav.drive_signal("clk", bits("0"))
+    mav.wait(100)
+    mav.assert_outputs(reg_out=bits("00000001"),next_pc=bits("00000010"),next_pc_jmp=bits("00000010"),
+                       mem_out=bits("00000010"))
+    # mav.assert_outputs()
+
+    mav.output_verilog(outpath("maverik_tb.v"))
+
 
 
