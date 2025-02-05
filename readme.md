@@ -1,6 +1,7 @@
 ## Projeto ainda em andamento!
 Escrevi uma simples biblioteca para testes unitários com python para verilog, o objetivo é utiliza-la em meu projeto de projetar uma CPU de 16 bits com arquitetura própria.
 
+![Imagem da biblioteca funcionando no terminal](blob:https://imgur.com/3cf4e8a5-0853-4752-9925-98e5e921ab9c)
 
 ## Maverik8 (8 bit computer)
 
